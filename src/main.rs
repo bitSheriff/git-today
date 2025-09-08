@@ -91,13 +91,13 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     if bug_commits > 0 || feature_commits > 0 || doc_commits > 0 {
         println!("Commits per issue type today:");
         if bug_commits > 0 {
-            println!("\t🐛: {}", bug_commits);
+            println!("\t🐛 Bugs: {}", bug_commits);
         }
         if feature_commits > 0 {
-            println!("\t🚀: {}", feature_commits);
+            println!("\t🚀 Features: {}", feature_commits);
         }
         if doc_commits > 0 {
-            println!("\t📝: {}", doc_commits);
+            println!("\t📝 Docs: {}", doc_commits);
         }
     }
 
