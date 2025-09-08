@@ -1,6 +1,6 @@
-# git-today
+# `git-today`
 
-![|300](./doc/cover.png)
+<img src="./doc/cover.png" style="zoom:50%;" />
 
 A tool to recap your daily git work.
 
