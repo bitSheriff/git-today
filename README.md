@@ -1,6 +1,6 @@
 # `git-today`
 
-<img src="./doc/cover.png" style="zoom:50%;" />
+<img src="./doc/cover.png" style="zoom: 25%;" />
 
 A tool to recap your daily git work.
 
