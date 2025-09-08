@@ -1,6 +1,6 @@
+use chrono::{DateTime, Local};
 use clap::{Arg, Command};
 use git2::Repository;
-use chrono::{Local, DateTime};
 use std::collections::HashMap;
 
 fn main() {
@@ -47,6 +47,9 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let mut commits_by_author: HashMap<String, u32> = HashMap::new();
     let mut commit_messages: Vec<String> = Vec::new();
 
+    let mut bug_commits = 0;
+    let mut feature_commits = 0;
+
     for oid in revwalk {
         let oid = oid?;
         let commit = repo.find_commit(oid)?;
@@ -59,6 +62,15 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             let author = commit.author();
             let author_name = author.name().unwrap_or("Unknown").to_string();
             *commits_by_author.entry(author_name).or_insert(0) += 1;
+
+            let message = commit.message().unwrap_or("").to_lowercase();
+            if message.contains("bug") || message.contains("fix") || message.contains("fixing") {
+                bug_commits += 1;
+            }
+            if message.contains("feat") || message.contains("feature") {
+                feature_commits += 1;
+            }
+
             commit_messages.push(commit.message().unwrap_or("").to_string());
         }
     }
@@ -66,6 +78,14 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     println!("Commits per author today:");
     for (author, count) in commits_by_author {
         println!("{}: {}", author, count);
+    }
+
+    if bug_commits > 0 {
+        println!("   \u{1F41B} {}", bug_commits);
+    }
+
+    if feature_commits > 0 {
+        println!("   \u{1F680} {}", feature_commits);
     }
 
     if full {
