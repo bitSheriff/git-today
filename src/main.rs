@@ -77,15 +77,18 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
 
     println!("Commits per author today:");
     for (author, count) in commits_by_author {
-        println!("{}: {}", author, count);
+        println!("\t{}: {}", author, count);
     }
 
+    if bug_commits > 0 || feature_commits > 0 {
+        println!("Commits per issue type today:");
+    }
     if bug_commits > 0 {
-        println!("   \u{1F41B} {}", bug_commits);
+        println!("\t\u{1F41B} {}", bug_commits);
     }
 
     if feature_commits > 0 {
-        println!("   \u{1F680} {}", feature_commits);
+        println!("\t\u{1F680} {}", feature_commits);
     }
 
     if full {
