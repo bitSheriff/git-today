@@ -1,6 +1,6 @@
 use clap::{Arg, Command};
-use git2::{Repository, Commit};
-use chrono::{Local, DateTime, TimeZone};
+use git2::Repository;
+use chrono::{Local, DateTime};
 use std::collections::HashMap;
 
 fn main() {
