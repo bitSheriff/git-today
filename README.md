@@ -1,6 +1,6 @@
 # git-today
 
-![](./doc/cover.png)
+![|300](./doc/cover.png)
 
 A tool to recap your daily git work.
 
