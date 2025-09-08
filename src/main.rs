@@ -1,7 +1,7 @@
 use chrono::{DateTime, Local};
 use clap::{Arg, Command};
 use git2::Repository;
-use std::collections::HashMap;
+use std::{collections::HashMap, process::exit};
 
 fn main() {
     let args = Command::new("git-today")
@@ -79,6 +79,10 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         }
     }
 
+    if commit_messages.len() == 0 {
+        println!("No commits today 😿");
+        exit(0);
+    }
     println!("Commits per author today:");
     for (author, count) in commits_by_author {
         println!("\t{}: {}", author, count);
