@@ -21,17 +21,24 @@ fn main() {
                 .help("Path to the git repository")
                 .default_value("."),
         )
+        .arg(
+            Arg::new("full")
+                .long("full")
+                .action(clap::ArgAction::SetTrue)
+                .help("Print commit messages"),
+        )
         .get_matches();
 
-    if let Some(path) = args.get_one::<String>("path") {
-        match run(path) {
-            Ok(_) => {}
-            Err(e) => eprintln!("error: {}", e),
-        }
+    let path = args.get_one::<String>("path").unwrap();
+    let full = args.get_flag("full");
+
+    match run(path, full) {
+        Ok(_) => {}
+        Err(e) => eprintln!("error: {}", e),
     }
 }
 
-fn run(path: &str) -> Result<(), git2::Error> {
+fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let repo = Repository::open(path)?;
     let mut revwalk = repo.revwalk()?;
     revwalk.push_head()?;
@@ -61,10 +68,11 @@ fn run(path: &str) -> Result<(), git2::Error> {
         println!("{}: {}", author, count);
     }
 
-    println!("
-Commit messages today:");
-    for msg in commit_messages {
-        println!("- {}", msg.trim());
+    if full {
+        println!("\nCommit messages today:");
+        for msg in commit_messages {
+            println!("- {}", msg.trim());
+        }
     }
 
     Ok(())
