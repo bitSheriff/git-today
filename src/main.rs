@@ -84,11 +84,11 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         println!("Commits per issue type today:");
     }
     if bug_commits > 0 {
-        println!("\t\u{1F41B} {}", bug_commits);
+        println!("\t\u{1F41B}: {}", bug_commits);
     }
 
     if feature_commits > 0 {
-        println!("\t\u{1F680} {}", feature_commits);
+        println!("\t\u{1F680}: {}", feature_commits);
     }
 
     if full {
