@@ -13,9 +13,12 @@ So I said to myself, why not analyze the commit history of today and print nice 
 
 ## Installation
 
-Currently no binaries are provided yet, so the only way is to install it with `cargo` directly from the repository url#
+Currently no binaries are provided yet, so the only way is to install it with `cargo` directly:
 
 ```sh
+# Use the version on Crates.io
+cargo install git-today
+
 # Use the GitHub version
 cargo install --git https://github.com/bitSheriff/git-today
 
