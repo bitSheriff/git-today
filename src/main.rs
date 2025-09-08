@@ -49,6 +49,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
 
     let mut bug_commits = 0;
     let mut feature_commits = 0;
+    let mut doc_commits = 0;
 
     for oid in revwalk {
         let oid = oid?;
@@ -70,6 +71,9 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             if message.contains("feat") || message.contains("feature") {
                 feature_commits += 1;
             }
+            if message.contains("doc") || message.contains("docs") {
+                doc_commits += 1;
+            }
 
             commit_messages.push(commit.message().unwrap_or("").to_string());
         }
@@ -80,15 +84,17 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         println!("\t{}: {}", author, count);
     }
 
-    if bug_commits > 0 || feature_commits > 0 {
+    if bug_commits > 0 || feature_commits > 0 || doc_commits > 0 {
         println!("Commits per issue type today:");
-    }
-    if bug_commits > 0 {
-        println!("\t\u{1F41B}: {}", bug_commits);
-    }
-
-    if feature_commits > 0 {
-        println!("\t\u{1F680}: {}", feature_commits);
+        if bug_commits > 0 {
+            println!("\t🐛: {}", bug_commits);
+        }
+        if feature_commits > 0 {
+            println!("\t🚀: {}", feature_commits);
+        }
+        if doc_commits > 0 {
+            println!("\t📝: {}", doc_commits);
+        }
     }
 
     if full {
