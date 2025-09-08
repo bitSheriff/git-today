@@ -79,7 +79,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         }
     }
 
-    if commit_messages.len() == 0 {
+    if commit_messages.is_empty() {
         println!("No commits today 😿");
         exit(0);
     }
