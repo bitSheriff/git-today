@@ -4,6 +4,13 @@
 
 A tool to recap your daily git work.
 
+## Motivation
+
+In my optinion, projects which solve a problem firstly to use, are the most valueable. So the idea for this project was born while I was writing my bachelor thesis:
+working all day in a project which gets bigger and bigger, the commits are piling up (big fan of commiting small chunks when working with LaTeX) and at the end of the day I had no idea how *much* I worked and how. Pretty early in the process I commited to "mark" my commits with little tags inside the message (not like `git tag`) to get a quick overview what this commit is about.
+
+So I said to myself, why not analyze the commit history of today and print nice little statistics.
+
 ## Usage
 
 ```
