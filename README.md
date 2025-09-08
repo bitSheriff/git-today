@@ -11,6 +11,18 @@ working all day in a project which gets bigger and bigger, the commits are pilin
 
 So I said to myself, why not analyze the commit history of today and print nice little statistics.
 
+## Installation
+
+Currently no binaries are provided yet, so the only way is to install it with `cargo` directly from the repository url#
+
+```sh
+# Use the GitHub version
+cargo install --git https://github.com/bitSheriff/git-today
+
+# Use my selfhosted version
+cargo install --git https://code.bitsheriff.dev/bitSheriff/git-today
+```
+
 ## Usage
 
 ```
