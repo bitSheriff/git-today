@@ -50,6 +50,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let mut bug_commits = 0;
     let mut feature_commits = 0;
     let mut doc_commits = 0;
+    let mut merge_commits = 0;
 
     for oid in revwalk {
         let oid = oid?;
@@ -63,6 +64,10 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             let author = commit.author();
             let author_name = author.name().unwrap_or("Unknown").to_string();
             *commits_by_author.entry(author_name).or_insert(0) += 1;
+
+            if commit.parent_count() > 1 {
+                merge_commits += 1;
+            }
 
             let message = commit.message().unwrap_or("").to_lowercase();
             if message.contains("bug") || message.contains("fix") || message.contains("fixing") {
@@ -98,6 +103,9 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         }
         if doc_commits > 0 {
             println!("\t📝 Docs: {}", doc_commits);
+        }
+        if merge_commits > 0 {
+            println!("\t🧬 Merges: {}", merge_commits);
         }
     }
 
