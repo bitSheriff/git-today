@@ -1,5 +1,7 @@
 use chrono::{DateTime, Local};
 use clap::{Arg, Command};
+use comfy_table::modifiers::UTF8_ROUND_CORNERS;
+use comfy_table::*;
 use git2::Repository;
 use std::{collections::HashMap, process::exit};
 
@@ -51,6 +53,20 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let mut feature_commits = 0;
     let mut doc_commits = 0;
     let mut merge_commits = 0;
+    let mut tab_author = Table::new();
+    let mut tab_issue = Table::new();
+    tab_author
+        .set_header(vec![
+            Cell::new("Author").add_attribute(Attribute::Bold),
+            Cell::new("# of Commits").add_attribute(Attribute::Bold),
+        ])
+        .apply_modifier(UTF8_ROUND_CORNERS);
+    tab_issue
+        .set_header(vec![
+            Cell::new("Issue Type").add_attribute(Attribute::Bold),
+            Cell::new("# of Commits").add_attribute(Attribute::Bold),
+        ])
+        .apply_modifier(UTF8_ROUND_CORNERS);
 
     for oid in revwalk {
         let oid = oid?;
@@ -88,25 +104,25 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         println!("No commits today 😿");
         exit(0);
     }
-    println!("Commits per author today:");
     for (author, count) in commits_by_author {
-        println!("\t{}: {}", author, count);
+        tab_author.add_row(vec![author, count.to_string()]);
     }
+    println!("{tab_author}");
 
     if bug_commits > 0 || feature_commits > 0 || doc_commits > 0 {
-        println!("Commits per issue type today:");
         if bug_commits > 0 {
-            println!("\t🐛 Bugs: {}", bug_commits);
+            tab_issue.add_row(vec!["🐛 Bugs", &bug_commits.to_string()]);
         }
         if feature_commits > 0 {
-            println!("\t🚀 Features: {}", feature_commits);
+            tab_issue.add_row(vec!["🚀 Features", &feature_commits.to_string()]);
         }
         if doc_commits > 0 {
-            println!("\t📝 Docs: {}", doc_commits);
+            tab_issue.add_row(vec!["📝 Docs", &doc_commits.to_string()]);
         }
         if merge_commits > 0 {
-            println!("\t🧬 Merges: {}", merge_commits);
+            tab_issue.add_row(vec!["🧬 Merges", &merge_commits.to_string()]);
         }
+        println!("{tab_issue}");
     }
 
     if full {
