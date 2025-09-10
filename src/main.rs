@@ -40,6 +40,13 @@ fn main() {
     }
 }
 
+fn add_row_with_centered_value(table: &mut Table, label: &str, value: &str) {
+    table.add_row(vec![
+        Cell::new(label),
+        Cell::new(value).set_alignment(CellAlignment::Center),
+    ]);
+}
+
 fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let repo = Repository::open(path)?;
     let mut revwalk = repo.revwalk()?;
@@ -109,37 +116,22 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         exit(0);
     }
     for (author, count) in commits_by_author {
-        tab_author.add_row(vec![
-            Cell::new(author),
-            Cell::new(count.to_string()).set_alignment(CellAlignment::Center),
-        ]);
+        add_row_with_centered_value(&mut tab_author, &author, &count.to_string());
     }
     println!("{tab_author}");
 
     if bug_commits > 0 || feature_commits > 0 || doc_commits > 0 {
         if bug_commits > 0 {
-            tab_issue.add_row(vec![
-                Cell::new("🐛 Bugs"),
-                Cell::new(bug_commits.to_string()).set_alignment(CellAlignment::Center),
-            ]);
+            add_row_with_centered_value(&mut tab_issue, "🐛 Bugs", &bug_commits.to_string());
         }
         if feature_commits > 0 {
-            tab_issue.add_row(vec![
-                Cell::new("🚀 Features"),
-                Cell::new(feature_commits.to_string()).set_alignment(CellAlignment::Center),
-            ]);
+            add_row_with_centered_value(&mut tab_issue, "🚀 Features", &feature_commits.to_string());
         }
         if doc_commits > 0 {
-            tab_issue.add_row(vec![
-                Cell::new("📝 Docs"),
-                Cell::new(doc_commits.to_string()).set_alignment(CellAlignment::Center),
-            ]);
+            add_row_with_centered_value(&mut tab_issue, "📝 Docs", &doc_commits.to_string());
         }
         if merge_commits > 0 {
-            tab_issue.add_row(vec![
-                Cell::new("🧬 Merges"),
-                Cell::new(merge_commits.to_string()).set_alignment(CellAlignment::Center),
-            ]);
+            add_row_with_centered_value(&mut tab_issue, "🧬 Merges", &merge_commits.to_string());
         }
         println!("{tab_issue}");
     }
