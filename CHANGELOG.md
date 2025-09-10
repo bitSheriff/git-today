@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.1.2: 2025-09-10
+- full UTF8 table
+
 ## v0.1.1: 2025-09-10
 - added group for merge commits
 - added table output
