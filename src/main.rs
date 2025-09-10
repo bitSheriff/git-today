@@ -1,6 +1,7 @@
 use chrono::{DateTime, Local};
 use clap::{Arg, Command};
 use comfy_table::modifiers::UTF8_ROUND_CORNERS;
+use comfy_table::presets::UTF8_FULL;
 use comfy_table::*;
 use git2::Repository;
 use std::{collections::HashMap, process::exit};
@@ -69,6 +70,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
                 .add_attribute(Attribute::Bold)
                 .set_alignment(CellAlignment::Center),
         ])
+        .load_preset(UTF8_FULL)
         .apply_modifier(UTF8_ROUND_CORNERS);
     tab_issue
         .set_header(vec![
@@ -77,6 +79,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
                 .add_attribute(Attribute::Bold)
                 .set_alignment(CellAlignment::Center),
         ])
+        .load_preset(UTF8_FULL)
         .apply_modifier(UTF8_ROUND_CORNERS);
 
     for oid in revwalk {
@@ -125,7 +128,11 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             add_row_with_centered_value(&mut tab_issue, "🐛 Bugs", &bug_commits.to_string());
         }
         if feature_commits > 0 {
-            add_row_with_centered_value(&mut tab_issue, "🚀 Features", &feature_commits.to_string());
+            add_row_with_centered_value(
+                &mut tab_issue,
+                "🚀 Features",
+                &feature_commits.to_string(),
+            );
         }
         if doc_commits > 0 {
             add_row_with_centered_value(&mut tab_issue, "📝 Docs", &doc_commits.to_string());
