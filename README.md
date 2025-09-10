@@ -1,5 +1,7 @@
 # `git-today`
 
+[![Crates.io](https://img.shields.io/crates/v/git-today.svg)](https://crates.io/crates/git-today)
+
 <img src="./doc/cover.png" style="zoom: 25%;" />
 
 A tool to recap your daily git work.
