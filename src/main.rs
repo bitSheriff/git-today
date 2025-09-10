@@ -58,13 +58,17 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     tab_author
         .set_header(vec![
             Cell::new("Author").add_attribute(Attribute::Bold),
-            Cell::new("# of Commits").add_attribute(Attribute::Bold),
+            Cell::new("# of Commits")
+                .add_attribute(Attribute::Bold)
+                .set_alignment(CellAlignment::Center),
         ])
         .apply_modifier(UTF8_ROUND_CORNERS);
     tab_issue
         .set_header(vec![
             Cell::new("Issue Type").add_attribute(Attribute::Bold),
-            Cell::new("# of Commits").add_attribute(Attribute::Bold),
+            Cell::new("# of Commits")
+                .add_attribute(Attribute::Bold)
+                .set_alignment(CellAlignment::Center),
         ])
         .apply_modifier(UTF8_ROUND_CORNERS);
 
@@ -105,22 +109,37 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         exit(0);
     }
     for (author, count) in commits_by_author {
-        tab_author.add_row(vec![author, count.to_string()]);
+        tab_author.add_row(vec![
+            Cell::new(author),
+            Cell::new(count.to_string()).set_alignment(CellAlignment::Center),
+        ]);
     }
     println!("{tab_author}");
 
     if bug_commits > 0 || feature_commits > 0 || doc_commits > 0 {
         if bug_commits > 0 {
-            tab_issue.add_row(vec!["🐛 Bugs", &bug_commits.to_string()]);
+            tab_issue.add_row(vec![
+                Cell::new("🐛 Bugs"),
+                Cell::new(bug_commits.to_string()).set_alignment(CellAlignment::Center),
+            ]);
         }
         if feature_commits > 0 {
-            tab_issue.add_row(vec!["🚀 Features", &feature_commits.to_string()]);
+            tab_issue.add_row(vec![
+                Cell::new("🚀 Features"),
+                Cell::new(feature_commits.to_string()).set_alignment(CellAlignment::Center),
+            ]);
         }
         if doc_commits > 0 {
-            tab_issue.add_row(vec!["📝 Docs", &doc_commits.to_string()]);
+            tab_issue.add_row(vec![
+                Cell::new("📝 Docs"),
+                Cell::new(doc_commits.to_string()).set_alignment(CellAlignment::Center),
+            ]);
         }
         if merge_commits > 0 {
-            tab_issue.add_row(vec!["🧬 Merges", &merge_commits.to_string()]);
+            tab_issue.add_row(vec![
+                Cell::new("🧬 Merges"),
+                Cell::new(merge_commits.to_string()).set_alignment(CellAlignment::Center),
+            ]);
         }
         println!("{tab_issue}");
     }
