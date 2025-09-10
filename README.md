@@ -13,7 +13,9 @@ So I said to myself, why not analyze the commit history of today and print nice 
 
 ## Installation
 
-Currently no binaries are provided yet, so the only way is to install it with `cargo` directly:
+[![Packaging status](https://repology.org/badge/vertical-allrepos/git-today.svg)](https://repology.org/project/git-today/versions)
+
+Currently no binaries are provided yet, so you can install it with `cargo` directly
 
 ```sh
 # Use the version on Crates.io
@@ -24,6 +26,12 @@ cargo install --git https://github.com/bitSheriff/git-today
 
 # Use my selfhosted version
 cargo install --git https://code.bitsheriff.dev/bitSheriff/git-today
+```
+
+or with the AUR
+
+```sh
+yay -S git-today
 ```
 
 ## Usage
