@@ -1,5 +1,6 @@
 # `git-today`
 
+[![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/bitSheriff/git-today/blob/main/LICENSE)
 [![Crates.io](https://img.shields.io/crates/v/git-today.svg)](https://crates.io/crates/git-today)
 
 <img src="./doc/cover.png" style="zoom: 25%;" />
