@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.1: not released
+## v0.1.1: 2025-09-10
 - added group for merge commits
 - added table output
 
