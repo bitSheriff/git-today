@@ -42,6 +42,22 @@ Options:
   -h, --help     Print help
 ```
 
+And this will print a small table which looks like:
+```
+╭------------+--------------╮
+| Author     | # of Commits |
++===========================+
+| bitSheriff |       6      |
+╰------------+--------------╯
+╭-------------+--------------╮
+| Issue Type  | # of Commits |
++============================+
+| 🚀 Features |       3      |
+|-------------+--------------|
+| 📝 Docs     |       2      |
+╰-------------+--------------╯
+```
+
 To use this tool with `git today`, you can create a git alias.
 
 ### Set the alias in the current repository:
