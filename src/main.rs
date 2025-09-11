@@ -28,7 +28,7 @@ fn main() {
             Arg::new("full")
                 .long("full")
                 .action(clap::ArgAction::SetTrue)
-                .help("Print commit messages"),
+                .help("Print commit messages and full table"),
         )
         .get_matches();
 
