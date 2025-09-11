@@ -122,7 +122,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         exit(0);
     }
     let mut authors: Vec<_> = commits_by_author.into_iter().collect();
-    authors.sort_by(|a, b| b.1.cmp(&a.1));
+    authors.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
     for (author, count) in authors {
         add_row_with_centered_value(&mut tab_author, &author, &count.to_string());
     }
