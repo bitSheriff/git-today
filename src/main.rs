@@ -57,11 +57,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let mut commits_by_author: HashMap<String, u32> = HashMap::new();
     let mut commit_messages: Vec<String> = Vec::new();
 
-    let mut bug_commits = 0;
-    let mut feature_commits = 0;
-    let mut doc_commits = 0;
-    let mut merge_commits = 0;
-    let mut test_commits = 0;
+    let mut commits_by_type: HashMap<String, u32> = HashMap::new();
     let mut tab_author = Table::new();
     let mut tab_issue = Table::new();
     tab_author
@@ -83,6 +79,13 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         .load_preset(UTF8_FULL)
         .apply_modifier(UTF8_ROUND_CORNERS);
 
+    let keyword_map = [
+        ("Bugs", vec!["bug", "fix", "fixing"]),
+        ("Features", vec!["feat", "feature"]),
+        ("Docs", vec!["doc", "docs"]),
+        ("Tests", vec!["test", "tests"]),
+    ];
+
     for oid in revwalk {
         let oid = oid?;
         let commit = repo.find_commit(oid)?;
@@ -97,21 +100,15 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             *commits_by_author.entry(author_name).or_insert(0) += 1;
 
             if commit.parent_count() > 1 {
-                merge_commits += 1;
+                *commits_by_type.entry("Merges".to_string()).or_insert(0) += 1;
+                continue; // if it is a commit, do not count it as something else
             }
 
             let message = commit.message().unwrap_or("").to_lowercase();
-            if message.contains("bug") || message.contains("fix") || message.contains("fixing") {
-                bug_commits += 1;
-            }
-            if message.contains("feat") || message.contains("feature") {
-                feature_commits += 1;
-            }
-            if message.contains("doc") || message.contains("docs") {
-                doc_commits += 1;
-            }
-            if message.contains("test") || message.contains("tests") {
-                test_commits += 1;
+            for (category, keywords) in &keyword_map {
+                if keywords.iter().any(|keyword| message.contains(keyword)) {
+                    *commits_by_type.entry(category.to_string()).or_insert(0) += 1;
+                }
             }
 
             commit_messages.push(commit.message().unwrap_or("").to_string());
@@ -127,25 +124,20 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     }
     println!("{tab_author}");
 
-    if (bug_commits + feature_commits + doc_commits + merge_commits + test_commits) > 0 || full {
-        if bug_commits > 0 || full {
-            add_row_with_centered_value(&mut tab_issue, "🐛 Bugs", &bug_commits.to_string());
-        }
-        if feature_commits > 0 || full {
-            add_row_with_centered_value(
-                &mut tab_issue,
-                "🚀 Features",
-                &feature_commits.to_string(),
-            );
-        }
-        if doc_commits > 0 || full {
-            add_row_with_centered_value(&mut tab_issue, "📝 Docs", &doc_commits.to_string());
-        }
-        if merge_commits > 0 || full {
-            add_row_with_centered_value(&mut tab_issue, "🧬 Merges", &merge_commits.to_string());
-        }
-        if test_commits > 0 || full {
-            add_row_with_centered_value(&mut tab_issue, "🔍 Tests", &test_commits.to_string());
+    if !commits_by_type.is_empty() || full {
+        let issue_types = [
+            ("Bugs", "🐛 Bugs"),
+            ("Features", "🚀 Features"),
+            ("Docs", "📝 Docs"),
+            ("Merges", "🧬 Merges"),
+            ("Tests", "🔍 Tests"),
+        ];
+
+        for (key, display_name) in &issue_types {
+            let count = commits_by_type.get(*key).unwrap_or(&0);
+            if *count > 0 || full {
+                add_row_with_centered_value(&mut tab_issue, display_name, &count.to_string());
+            }
         }
 
         println!("{tab_issue}");
