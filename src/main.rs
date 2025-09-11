@@ -113,7 +113,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
 
             commit_messages.push(commit.message().unwrap_or("").to_string());
         } else if commit_date < today {
-            revwalk.hide(oid)?;
+            revwalk.hide(oid)?; // skip parent commits if already this is older than today (they can only get older in this history)
         }
     }
 
