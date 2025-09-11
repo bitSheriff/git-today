@@ -86,7 +86,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         ("Tests", vec!["test", "tests"]),
     ];
 
-    for oid in revwalk {
+    while let Some(oid) = revwalk.next() {
         let oid = oid?;
         let commit = repo.find_commit(oid)?;
         let commit_time = commit.time();
@@ -112,6 +112,8 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             }
 
             commit_messages.push(commit.message().unwrap_or("").to_string());
+        } else if commit_date < today {
+            revwalk.hide(oid)?;
         }
     }
 
