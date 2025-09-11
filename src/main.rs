@@ -127,24 +127,24 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     }
     println!("{tab_author}");
 
-    if (bug_commits + feature_commits + doc_commits + merge_commits + test_commits) > 0 {
-        if bug_commits > 0 {
+    if (bug_commits + feature_commits + doc_commits + merge_commits + test_commits) > 0 || full {
+        if bug_commits > 0 || full {
             add_row_with_centered_value(&mut tab_issue, "🐛 Bugs", &bug_commits.to_string());
         }
-        if feature_commits > 0 {
+        if feature_commits > 0 || full {
             add_row_with_centered_value(
                 &mut tab_issue,
                 "🚀 Features",
                 &feature_commits.to_string(),
             );
         }
-        if doc_commits > 0 {
+        if doc_commits > 0 || full {
             add_row_with_centered_value(&mut tab_issue, "📝 Docs", &doc_commits.to_string());
         }
-        if merge_commits > 0 {
+        if merge_commits > 0 || full {
             add_row_with_centered_value(&mut tab_issue, "🧬 Merges", &merge_commits.to_string());
         }
-        if test_commits > 0 {
+        if test_commits > 0 || full {
             add_row_with_centered_value(&mut tab_issue, "🔍 Tests", &test_commits.to_string());
         }
 
