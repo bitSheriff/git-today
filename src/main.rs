@@ -61,6 +61,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let mut feature_commits = 0;
     let mut doc_commits = 0;
     let mut merge_commits = 0;
+    let mut test_commits = 0;
     let mut tab_author = Table::new();
     let mut tab_issue = Table::new();
     tab_author
@@ -109,6 +110,9 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             if message.contains("doc") || message.contains("docs") {
                 doc_commits += 1;
             }
+            if message.contains("test") || message.contains("tests") {
+                test_commits += 1;
+            }
 
             commit_messages.push(commit.message().unwrap_or("").to_string());
         }
@@ -123,7 +127,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     }
     println!("{tab_author}");
 
-    if bug_commits > 0 || feature_commits > 0 || doc_commits > 0 {
+    if (bug_commits + feature_commits + doc_commits + merge_commits + test_commits) > 0 {
         if bug_commits > 0 {
             add_row_with_centered_value(&mut tab_issue, "🐛 Bugs", &bug_commits.to_string());
         }
@@ -140,6 +144,10 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         if merge_commits > 0 {
             add_row_with_centered_value(&mut tab_issue, "🧬 Merges", &merge_commits.to_string());
         }
+        if test_commits > 0 {
+            add_row_with_centered_value(&mut tab_issue, "🔍 Tests", &test_commits.to_string());
+        }
+
         println!("{tab_issue}");
     }
 
