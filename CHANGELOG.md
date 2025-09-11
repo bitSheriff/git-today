@@ -1,6 +1,7 @@
 # Changelog
 
 ## v0.1.3:
+- fix: analyze all branches not only the current one
 - `--full` prints empty table entries too
 - added `Test` issue type
 
