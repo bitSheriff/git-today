@@ -1,6 +1,7 @@
 # Changelog
 
 ## v0.1.3:
+- `--full` prints empty table entries too
 - added `Test` issue type
 
 ## v0.1.2: 2025-09-10
