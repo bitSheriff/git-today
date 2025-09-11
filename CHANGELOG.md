@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.1.3:
+- added `Test` issue type
+
 ## v0.1.2: 2025-09-10
 - full UTF8 table
 
