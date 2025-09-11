@@ -51,7 +51,7 @@ fn add_row_with_centered_value(table: &mut Table, label: &str, value: &str) {
 fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let repo = Repository::open(path)?;
     let mut revwalk = repo.revwalk()?;
-    revwalk.push_head()?;
+    revwalk.push_glob("refs/heads/*")?;
 
     let today = Local::now().date_naive();
     let mut commits_by_author: HashMap<String, u32> = HashMap::new();
