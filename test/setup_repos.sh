@@ -1,15 +1,25 @@
 #! /usr/bin/bash
 
-function delte_all_repos() {
+# Exit on error
+set -e
+
+function delete_all_repos() {
     rm -rf repos
 }
 
 function commit(){
     local msg="$1"
+    local date="$2" # An optional date string like "yesterday"
 
     # paste dev/urandom into dummy.txt
     echo $(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1) > "dummy.txt"
-    git add "dummy.txt" && git commit -m "$msg"
+    git add "dummy.txt"
+    if [ -z "$date" ]; then
+        git commit -m "$msg"
+    else
+        # Set the author and committer date for the commit
+        GIT_COMMITTER_DATE="$(date --date="$date")" git commit --date="$date" -m "$msg"
+    fi
 }
 
 function change_author() {
@@ -89,11 +99,24 @@ function testcase_d_authors() {
     cd ..
 }
 
+function testcase_e_dates() {
+    create_repo "e"
+    cd "e"
+    commit "feat: init repo" "2 days ago"
+    change_author "Author2"
+    commit "bug: fixed something" "2 days ago"
+    change_author "Author3"
+    commit "doc: documented something"  "yesterday"
+    change_author "Author4"
+    commit "feat: new author"
+
+    cd ..
+}
 ########################
 # MAIN
 ########################
 
-delte_all_repos
+delete_all_repos
 
 # create a directory for all the automated repositories
 mkdir -p repos
@@ -104,3 +127,4 @@ testcase_a_simple
 testcase_b_branches
 testcase_c_merge
 testcase_d_authors
+testcase_e_dates
