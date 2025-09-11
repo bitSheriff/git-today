@@ -74,6 +74,21 @@ function testcase_c_merge() {
 
     cd ..
 }
+
+function testcase_d_authors() {
+    create_repo "d"
+    cd "d"
+    commit "feat: init repo"
+    change_author "Author2"
+    commit "bug: fixed something"
+    change_author "Author3"
+    commit "doc: documented something"
+    change_author "Author4"
+    commit "feat: new author"
+
+    cd ..
+}
+
 ########################
 # MAIN
 ########################
@@ -88,3 +103,4 @@ cd repos
 testcase_a_simple
 testcase_b_branches
 testcase_c_merge
+testcase_d_authors
