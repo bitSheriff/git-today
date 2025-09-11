@@ -101,7 +101,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
 
             if commit.parent_count() > 1 {
                 *commits_by_type.entry("Merges".to_string()).or_insert(0) += 1;
-                continue; // if it is a commit, do not count it as something else
+                continue; // if it is a merge commit, do not count it as something else
             }
 
             let message = commit.message().unwrap_or("").to_lowercase();
