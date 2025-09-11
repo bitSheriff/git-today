@@ -70,13 +70,15 @@ function testcase_c_merge() {
     commit "doc: again"
 
     # merge and force our changes
-    git merge -X ours -m "merge" main
+    git merge -X ours -m "merge feat" main
 
     cd ..
 }
 ########################
 # MAIN
 ########################
+
+delte_all_repos
 
 # create a directory for all the automated repositories
 mkdir -p repos
