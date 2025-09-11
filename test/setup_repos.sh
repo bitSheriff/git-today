@@ -1,6 +1,4 @@
 #! /usr/bin/bash
-
-# Exit on error
 set -e
 
 function delete_all_repos() {
@@ -9,7 +7,7 @@ function delete_all_repos() {
 
 function commit(){
     local msg="$1"
-    local date="$2" # An optional date string like "yesterday"
+    local date="$2" # optional date argument, e.g., "yesterday" or "2 days ago"
 
     # paste dev/urandom into dummy.txt
     echo $(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1) > "dummy.txt"
@@ -17,20 +15,20 @@ function commit(){
     if [ -z "$date" ]; then
         git commit -m "$msg"
     else
-        # Set the author and committer date for the commit
         GIT_COMMITTER_DATE="$(date --date="$date")" git commit --date="$date" -m "$msg"
     fi
 }
 
 function change_author() {
     git config user.name "$1"
+    git config user.email "$1@example.com"
 }
 
 function create_repo() {
     # create directory
-    mkdir "$1" && cd "$1"
+    mkdir -p "$1" && cd "$1"
 
-    git init
+    git init --initial-branch=main
     # set needed git configs
     git config user.name "Author1"
     git config user.email "Author1@example.com"
@@ -95,36 +93,38 @@ function testcase_d_authors() {
     commit "doc: documented something"
     change_author "Author4"
     commit "feat: new author"
-
-    cd ..
-}
-
-function testcase_e_dates() {
-    create_repo "e"
-    cd "e"
-    commit "feat: init repo" "2 days ago"
-    change_author "Author2"
-    commit "bug: fixed something" "2 days ago"
-    change_author "Author3"
-    commit "doc: documented something"  "yesterday"
-    change_author "Author4"
+    commit "feat: new author"
+    commit "feat: new author"
     commit "feat: new author"
 
     cd ..
 }
+
+function testcase_e_time_based() {
+    create_repo "e"
+    cd "e"
+    commit "feat: something from today"
+    commit "fix: a bug from yesterday" "yesterday"
+    commit "docs: docs from 2 days ago" "2 days ago"
+    cd ..
+}
+
 ########################
 # MAIN
 ########################
+function main() {
+    delete_all_repos
 
-delete_all_repos
+    # create a directory for all the automated repositories
+    mkdir -p repos
 
-# create a directory for all the automated repositories
-mkdir -p repos
+    cd repos
 
-cd repos
+    testcase_a_simple
+    testcase_b_branches
+    testcase_c_merge
+    testcase_d_authors
+    testcase_e_time_based
+}
 
-testcase_a_simple
-testcase_b_branches
-testcase_c_merge
-testcase_d_authors
-testcase_e_dates
+main

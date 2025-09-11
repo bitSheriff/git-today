@@ -1,2 +1,7 @@
 /target
 test/repos/**
+test/expected/a
+test/expected/b
+test/expected/c
+test/expected/d
+test/expected/e
