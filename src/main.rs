@@ -121,7 +121,9 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         println!("No commits today 😿");
         exit(0);
     }
-    for (author, count) in commits_by_author {
+    let mut authors: Vec<_> = commits_by_author.into_iter().collect();
+    authors.sort_by(|a, b| b.1.cmp(&a.1));
+    for (author, count) in authors {
         add_row_with_centered_value(&mut tab_author, &author, &count.to_string());
     }
     println!("{tab_author}");
