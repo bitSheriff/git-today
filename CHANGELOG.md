@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.4:
+- authors are now ordered on their commit count
+    - secondary order function is author name
+
 ## v0.1.3: 2025-09-11
 - fix: optimization, exit revwalk if commit is older than today, so any parent commits are skipped (much much faster, tested it with the Linux Kernel)
 - fix: analyze all branches not only the current one
