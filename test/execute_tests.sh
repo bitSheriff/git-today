@@ -32,7 +32,7 @@ for test in $TEST_CASES; do
     output=$($BINARY repos/$test)
 
     # Compare with expected output
-    if diff -q -w <(echo "$output") "expected/$test" > /dev/null; then
+    if diff -q -w <(echo "$output") "expected/${test}.out" > /dev/null; then
         echo "✅"
     else
         echo "❌"
@@ -40,9 +40,9 @@ for test in $TEST_CASES; do
         echo "-------------------------------------------------"
         # Use colordiff if available, otherwise regular diff
         if command -v colordiff &> /dev/null; then
-            colordiff <(echo "$output") "expected/$test"
+            colordiff <(echo "$output") "expected/$test.out"
         else
-            diff <(echo "$output") "expected/$test"
+            diff <(echo "$output") "expected/$test.out"
         fi
         echo "-------------------------------------------------"
         exit 1

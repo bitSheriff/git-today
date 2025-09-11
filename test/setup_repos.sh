@@ -103,9 +103,9 @@ function testcase_d_authors() {
 function testcase_e_time_based() {
     create_repo "e"
     cd "e"
-    commit "feat: something from today"
-    commit "fix: a bug from yesterday" "yesterday"
     commit "docs: docs from 2 days ago" "2 days ago"
+    commit "fix: a bug from yesterday" "yesterday"
+    commit "feat: something from today"
     cd ..
 }
 
