@@ -84,6 +84,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         ("Features", vec!["feat", "feature"]),
         ("Docs", vec!["doc", "docs"]),
         ("Tests", vec!["test", "tests"]),
+        ("Refactors", vec!["refavtors", "rewrite"]),
     ];
 
     while let Some(oid) = revwalk.next() {
@@ -132,6 +133,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         let issue_types = [
             ("Bugs", "🐛 Bugs"),
             ("Features", "🚀 Features"),
+            ("Refactors", "🪛 Refactrors"),
             ("Docs", "📝 Docs"),
             ("Merges", "🧬 Merges"),
             ("Tests", "🔍 Tests"),
