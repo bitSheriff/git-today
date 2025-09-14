@@ -7,7 +7,10 @@ default:
 
 # Run checks on the code
 check:
-    cargo clippy
+    # Format Code
+    @cargo fmt
+    # Lint Code
+    @cargo clippy
 
 # Install the binary
 install:
