@@ -133,7 +133,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         let issue_types = [
             ("Bugs", "🐛 Bugs"),
             ("Features", "🚀 Features"),
-            ("Refactors", "🪛 Refactrors"),
+            ("Refactors", "♻️ Refactrors"),
             ("Docs", "📝 Docs"),
             ("Merges", "🧬 Merges"),
             ("Tests", "🔍 Tests"),
