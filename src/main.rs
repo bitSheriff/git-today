@@ -84,7 +84,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         ("Features", vec!["feat", "feature"]),
         ("Docs", vec!["doc", "docs"]),
         ("Tests", vec!["test", "tests"]),
-        ("Refactors", vec!["refavtors", "rewrite"]),
+        ("Refactors", vec!["refactors", "rewrite"]),
     ];
 
     while let Some(oid) = revwalk.next() {
