@@ -6,6 +6,12 @@ use comfy_table::*;
 use git2::Repository;
 use std::{collections::HashMap, process::exit};
 
+struct Contributions {
+    commits: u32,
+    lines_added: u32,
+    lines_removed: u32,
+}
+
 fn main() {
     let args = Command::new("git-today")
         .disable_version_flag(true)
@@ -54,21 +60,29 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     revwalk.push_glob("refs/heads/*")?;
 
     let today = Local::now().date_naive();
-    let mut commits_by_author: HashMap<String, u32> = HashMap::new();
+    let mut commits_by_author: HashMap<String, Contributions> = HashMap::new();
     let mut commit_messages: Vec<String> = Vec::new();
 
     let mut commits_by_type: HashMap<String, u32> = HashMap::new();
     let mut tab_author = Table::new();
     let mut tab_issue = Table::new();
+    let mut tab_author_header = vec![
+        Cell::new("Author").add_attribute(Attribute::Bold),
+        Cell::new("# of Commits")
+            .add_attribute(Attribute::Bold)
+            .set_alignment(CellAlignment::Center),
+    ];
+
+    if full {
+        tab_author_header.push(Cell::new("Adds").add_attribute(Attribute::Bold));
+        tab_author_header.push(Cell::new("Dels").add_attribute(Attribute::Bold));
+    }
+
     tab_author
-        .set_header(vec![
-            Cell::new("Author").add_attribute(Attribute::Bold),
-            Cell::new("# of Commits")
-                .add_attribute(Attribute::Bold)
-                .set_alignment(CellAlignment::Center),
-        ])
+        .set_header(tab_author_header)
         .load_preset(UTF8_FULL)
         .apply_modifier(UTF8_ROUND_CORNERS);
+
     tab_issue
         .set_header(vec![
             Cell::new("Issue Type").add_attribute(Attribute::Bold),
@@ -98,7 +112,14 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         if commit_date == today {
             let author = commit.author();
             let author_name = author.name().unwrap_or("Unknown").to_string();
-            *commits_by_author.entry(author_name).or_insert(0) += 1;
+            let contributions = commits_by_author
+                .entry(author_name)
+                .or_insert(Contributions {
+                    commits: 0,
+                    lines_added: 0,
+                    lines_removed: 0,
+                });
+            contributions.commits += 1;
 
             if commit.parent_count() > 1 {
                 *commits_by_type.entry("Merges".to_string()).or_insert(0) += 1;
@@ -123,9 +144,9 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         exit(0);
     }
     let mut authors: Vec<_> = commits_by_author.into_iter().collect();
-    authors.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
-    for (author, count) in authors {
-        add_row_with_centered_value(&mut tab_author, &author, &count.to_string());
+    authors.sort_by(|a, b| b.1.commits.cmp(&a.1.commits).then_with(|| a.0.cmp(&b.0)));
+    for (author, contributions) in authors {
+        add_row_with_centered_value(&mut tab_author, &author, &contributions.commits.to_string());
     }
     println!("{tab_author}");
 
