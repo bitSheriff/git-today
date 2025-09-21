@@ -3,6 +3,9 @@
 ## v0.1.4:
 - authors are now ordered on their commit count
     - secondary order function is author name
+- full table
+    - added lines added and deleted
+    - added unique list of files changed (count)
 
 ## v0.1.3: 2025-09-11
 - fix: optimization, exit revwalk if commit is older than today, so any parent commits are skipped (much much faster, tested it with the Linux Kernel)
