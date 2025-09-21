@@ -7,9 +7,10 @@ use git2::Repository;
 use std::{collections::HashMap, process::exit};
 
 struct Contributions {
-    commits: u32,
-    lines_added: u32,
-    lines_removed: u32,
+    commits: usize,
+    lines_added: usize,
+    lines_removed: usize,
+    files_changed: usize,
 }
 
 fn main() {
@@ -76,6 +77,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     if full {
         tab_author_header.push(Cell::new("Adds").add_attribute(Attribute::Bold));
         tab_author_header.push(Cell::new("Dels").add_attribute(Attribute::Bold));
+        tab_author_header.push(Cell::new("Files").add_attribute(Attribute::Bold));
     }
 
     tab_author
@@ -118,8 +120,27 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
                     commits: 0,
                     lines_added: 0,
                     lines_removed: 0,
+                    files_changed: 0,
                 });
             contributions.commits += 1;
+
+            let tree = commit.tree()?;
+            let parent = if commit.parent_count() > 0 {
+                Some(commit.parent(0)?)
+            } else {
+                None
+            };
+            let parent_tree = if let Some(p) = &parent {
+                Some(p.tree()?)
+            } else {
+                None
+            };
+
+            let diff = repo.diff_tree_to_tree(parent_tree.as_ref(), Some(&tree), None)?;
+            let stats = diff.stats()?;
+            contributions.lines_added += stats.insertions();
+            contributions.lines_removed += stats.deletions();
+            contributions.files_changed += stats.files_changed();
 
             if commit.parent_count() > 1 {
                 *commits_by_type.entry("Merges".to_string()).or_insert(0) += 1;
@@ -146,7 +167,26 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let mut authors: Vec<_> = commits_by_author.into_iter().collect();
     authors.sort_by(|a, b| b.1.commits.cmp(&a.1.commits).then_with(|| a.0.cmp(&b.0)));
     for (author, contributions) in authors {
-        add_row_with_centered_value(&mut tab_author, &author, &contributions.commits.to_string());
+        if full {
+            tab_author.add_row(vec![
+                Cell::new(author),
+                Cell::new(contributions.commits.to_string()).set_alignment(CellAlignment::Center),
+                Cell::new(contributions.lines_added.to_string())
+                    .set_alignment(CellAlignment::Center)
+                    .fg(Color::Green),
+                Cell::new(contributions.lines_removed.to_string())
+                    .set_alignment(CellAlignment::Center)
+                    .fg(Color::Red),
+                Cell::new(contributions.files_changed.to_string())
+                    .set_alignment(CellAlignment::Center),
+            ]);
+        } else {
+            add_row_with_centered_value(
+                &mut tab_author,
+                &author,
+                &contributions.commits.to_string(),
+            );
+        }
     }
     println!("{tab_author}");
 
