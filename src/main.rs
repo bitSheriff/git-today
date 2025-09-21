@@ -4,13 +4,16 @@ use comfy_table::modifiers::UTF8_ROUND_CORNERS;
 use comfy_table::presets::UTF8_FULL;
 use comfy_table::*;
 use git2::Repository;
-use std::{collections::HashMap, process::exit};
+use std::{
+    collections::{HashMap, HashSet},
+    process::exit,
+};
 
 struct Contributions {
     commits: usize,
     lines_added: usize,
     lines_removed: usize,
-    files_changed: usize,
+    files_changed: HashSet<String>,
 }
 
 fn main() {
@@ -120,7 +123,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
                     commits: 0,
                     lines_added: 0,
                     lines_removed: 0,
-                    files_changed: 0,
+                    files_changed: HashSet::new(),
                 });
             contributions.commits += 1;
 
@@ -140,7 +143,20 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             let stats = diff.stats()?;
             contributions.lines_added += stats.insertions();
             contributions.lines_removed += stats.deletions();
-            contributions.files_changed += stats.files_changed();
+
+            diff.foreach(
+                &mut |delta, _| {
+                    if let Some(path) = delta.new_file().path() {
+                        contributions
+                            .files_changed
+                            .insert(path.to_string_lossy().to_string());
+                    }
+                    true
+                },
+                None,
+                None,
+                None,
+            )?;
 
             if commit.parent_count() > 1 {
                 *commits_by_type.entry("Merges".to_string()).or_insert(0) += 1;
@@ -177,7 +193,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
                 Cell::new(contributions.lines_removed.to_string())
                     .set_alignment(CellAlignment::Center)
                     .fg(Color::Red),
-                Cell::new(contributions.files_changed.to_string())
+                Cell::new(contributions.files_changed.len().to_string())
                     .set_alignment(CellAlignment::Center),
             ]);
         } else {
