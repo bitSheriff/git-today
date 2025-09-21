@@ -180,6 +180,16 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         println!("No commits today 😿");
         exit(0);
     }
+    let all_changed_files: HashSet<String> = if full {
+        commits_by_author
+            .values()
+            .flat_map(|c| &c.files_changed)
+            .cloned()
+            .collect()
+    } else {
+        HashSet::new()
+    };
+
     let mut authors: Vec<_> = commits_by_author.into_iter().collect();
     authors.sort_by(|a, b| b.1.commits.cmp(&a.1.commits).then_with(|| a.0.cmp(&b.0)));
     for (author, contributions) in authors {
@@ -227,6 +237,15 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     }
 
     if full {
+        if !all_changed_files.is_empty() {
+            println!("\nChanged files today:");
+            let mut sorted_files: Vec<_> = all_changed_files.into_iter().collect();
+            sorted_files.sort();
+            for file in sorted_files {
+                println!("- {}", file);
+            }
+        }
+
         println!("\nCommit messages today:");
         for msg in commit_messages {
             println!("- {}", msg.trim());
