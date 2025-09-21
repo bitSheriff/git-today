@@ -18,31 +18,41 @@ echo "Setting up test repositories..."
 echo "Generating expected output..."
 mkdir -p expected
 
-TEST_CASES="a b c d e"
-#for test in $TEST_CASES; do
-#    $BINARY repos/$test > expected/$test
-#done
+# Generate .call and .out files for regular tests
+for test in a b c d e; do
+    CMD="$BINARY repos/$test"
+    echo "$CMD" > "expected/${test}.call"
+    $CMD > "expected/${test}.out"
+done
+
+# Generate .call and .out files for --full tests
+for test in a b c d e; do
+    CMD="$BINARY --full repos/$test"
+    # echo "$CMD" > "expected/${test}.call"
+    $CMD > "expected/${test}a.out"
+done
 
 # 4. Run tests
 echo "Running tests..."
-for test in $TEST_CASES; do
-    printf "%-20s" "Testing repository $test..." # Print test name
+for call_file in expected/*.call; do
+    test_name=$(basename "$call_file" .call)
+    printf "%-20s" "Testing repository $test_name..." # Print test name
 
     # Run the command and capture output
-    output=$($BINARY repos/$test)
+    output=$(bash "$call_file")
 
     # Compare with expected output
-    if diff -q -w <(echo "$output") "expected/${test}.out" > /dev/null; then
+    if diff -q -w <(echo "$output") "expected/${test_name}.out" > /dev/null; then
         echo "✅"
     else
         echo "❌"
-        echo "Error: Output for test '$test' does not match expected output."
+        echo "Error: Output for test '$test_name' does not match expected output."
         echo "-------------------------------------------------"
         # Use colordiff if available, otherwise regular diff
         if command -v colordiff &> /dev/null; then
-            colordiff <(echo "$output") "expected/$test.out"
+            colordiff <(echo "$output") "expected/${test_name}.out"
         else
-            diff <(echo "$output") "expected/$test.out"
+            diff <(echo "$output") "expected/${test_name}.out"
         fi
         echo "-------------------------------------------------"
         exit 1
