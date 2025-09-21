@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.4:
+## v0.1.4: 2025-09-21
 - authors are now ordered on their commit count
     - secondary order function is author name
 - full table
