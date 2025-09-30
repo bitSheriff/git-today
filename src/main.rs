@@ -16,6 +16,14 @@ struct Contributions {
     files_changed: HashSet<String>,
 }
 
+struct Display {
+    authors: bool,
+    messages: bool,
+    issue_types: bool,
+    files: bool,
+    issues: bool,
+}
+
 fn main() {
     let args = Command::new("git-today")
         .disable_version_flag(true)
@@ -59,6 +67,14 @@ fn add_row_with_centered_value(table: &mut Table, label: &str, value: &str) {
 }
 
 fn run(path: &str, full: bool) -> Result<(), git2::Error> {
+    // config what to display with default values
+    let mut display = Display {
+        authors: true,
+        messages: true,
+        issue_types: true,
+        files: false,
+        issues: false,
+    };
     let repo = Repository::open(path)?;
     let mut revwalk = repo.revwalk()?;
     revwalk.push_glob("refs/heads/*")?;
@@ -68,7 +84,9 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let mut commit_messages: Vec<String> = Vec::new();
 
     let mut commits_by_type: HashMap<String, u32> = HashMap::new();
+    let mut commits_by_issue: HashMap<String, u32> = HashMap::new();
     let mut tab_author = Table::new();
+    let mut tab_types = Table::new();
     let mut tab_issue = Table::new();
     let mut tab_author_header = vec![
         Cell::new("Author").add_attribute(Attribute::Bold),
@@ -81,6 +99,8 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         tab_author_header.push(Cell::new("Adds").add_attribute(Attribute::Bold));
         tab_author_header.push(Cell::new("Dels").add_attribute(Attribute::Bold));
         tab_author_header.push(Cell::new("Files").add_attribute(Attribute::Bold));
+        display.messages = true;
+        display.files = true;
     }
 
     tab_author
@@ -88,9 +108,19 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         .load_preset(UTF8_FULL)
         .apply_modifier(UTF8_ROUND_CORNERS);
 
-    tab_issue
+    tab_types
         .set_header(vec![
             Cell::new("Issue Type").add_attribute(Attribute::Bold),
+            Cell::new("# of Commits")
+                .add_attribute(Attribute::Bold)
+                .set_alignment(CellAlignment::Center),
+        ])
+        .load_preset(UTF8_FULL)
+        .apply_modifier(UTF8_ROUND_CORNERS);
+
+    tab_issue
+        .set_header(vec![
+            Cell::new("Issue").add_attribute(Attribute::Bold),
             Cell::new("# of Commits")
                 .add_attribute(Attribute::Bold)
                 .set_alignment(CellAlignment::Center),
@@ -229,23 +259,23 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         for (key, display_name) in &issue_types {
             let count = commits_by_type.get(*key).unwrap_or(&0);
             if *count > 0 || full {
-                add_row_with_centered_value(&mut tab_issue, display_name, &count.to_string());
+                add_row_with_centered_value(&mut tab_types, display_name, &count.to_string());
             }
         }
 
-        println!("{tab_issue}");
+        println!("{tab_types}");
     }
 
-    if full {
-        if !all_changed_files.is_empty() {
-            println!("\nChanged files today:");
-            let mut sorted_files: Vec<_> = all_changed_files.into_iter().collect();
-            sorted_files.sort();
-            for file in sorted_files {
-                println!("- {}", file);
-            }
+    if display.files && !all_changed_files.is_empty() {
+        println!("\nChanged files today:");
+        let mut sorted_files: Vec<_> = all_changed_files.into_iter().collect();
+        sorted_files.sort();
+        for file in sorted_files {
+            println!("- {}", file);
         }
+    }
 
+    if display.messages && !commit_messages.is_empty() {
         println!("\nCommit messages today:");
         for msg in commit_messages {
             println!("- {}", msg.trim());
