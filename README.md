@@ -112,6 +112,17 @@ Commit messages today:
 - doc: documented something
 - bug: fixed something
 - feat: init repo
+
+╭──────────────┬──────────────╮
+│ Issue Ticket ┆ # of Commits │
+╞══════════════╪══════════════╡
+│ issue-1      ┆       5      │
+├╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ issue-a      ┆       4      │
+├╌╌╌╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ issue-123    ┆       1      │
+╰──────────────┴──────────────╯
+
 ```
 
 
