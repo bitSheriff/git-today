@@ -15,22 +15,22 @@ echo "Setting up test repositories..."
 # 3. Generate expected output files
 # This step creates the "golden files" for our tests.
 # In a real-world scenario, you would commit these files to your repository.
-echo "Generating expected output..."
-mkdir -p expected
+# echo "Generating expected output..."
+# mkdir -p expected
 
 # Generate .call and .out files for regular tests
-for test in a b c d e; do
-    CMD="$BINARY repos/$test"
-    echo "$CMD" > "expected/${test}.call"
-    $CMD > "expected/${test}.out"
-done
+# for test in a b c d e; do
+#     CMD="$BINARY repos/$test"
+#     echo "$CMD" > "expected/${test}.call"
+#     $CMD > "expected/${test}.out"
+# done
 
 # Generate .call and .out files for --full tests
-for test in a b c d e; do
-    CMD="$BINARY --full repos/$test"
-    # echo "$CMD" > "expected/${test}.call"
-    $CMD > "expected/${test}a.out"
-done
+# for test in a b c d e; do
+#     CMD="$BINARY --full repos/$test"
+#     # echo "$CMD" > "expected/${test}.call"
+#     $CMD > "expected/${test}a.out"
+# done
 
 # 4. Run tests
 echo "Running tests..."

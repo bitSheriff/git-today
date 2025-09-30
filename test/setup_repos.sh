@@ -109,6 +109,22 @@ function testcase_e_time_based() {
     cd ..
 }
 
+function testcase_f_issue_numbers() {
+    create_repo "f"
+    cd "f"
+    commit "[issue-123] docs: docs"
+    commit "[issue-1] docs: another doc"
+    commit "[issue-1] fix: a bug from today"
+    commit "#issue-1 feat: something from today"
+    commit "#issue-1: feat: something from today"
+    commit "[issue-1] feat: something from today"
+    commit "[issue-a] feat: something from today"
+    commit "[issue-a] feat: something from today"
+    commit "[issue-a] feat: something from today"
+    commit "[issue-a] feat: something from today"
+    cd ..
+}
+
 ########################
 # MAIN
 ########################
@@ -125,6 +141,7 @@ function main() {
     testcase_c_merge
     testcase_d_authors
     testcase_e_time_based
+    testcase_f_issue_numbers
 }
 
 main
