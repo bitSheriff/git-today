@@ -22,6 +22,7 @@ struct Display {
     issue_types: bool,
     files: bool,
     issues: bool,
+    line_diff: bool,
 }
 
 fn main() {
@@ -70,10 +71,11 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     // config what to display with default values
     let mut display = Display {
         authors: true,
-        messages: true,
+        messages: false,
         issue_types: true,
         files: false,
         issues: false,
+        line_diff: false,
     };
     let repo = Repository::open(path)?;
     let mut revwalk = repo.revwalk()?;
@@ -101,6 +103,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         tab_author_header.push(Cell::new("Files").add_attribute(Attribute::Bold));
         display.messages = true;
         display.files = true;
+        display.issues = true;
     }
 
     tab_author
@@ -193,14 +196,36 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
                 continue; // if it is a merge commit, do not count it as something else
             }
 
-            let message = commit.message().unwrap_or("").to_lowercase();
+            let message = commit.message().unwrap_or("");
+            if message.starts_with('[') {
+                if let Some(end_index) = message.find(']') {
+                    let issue = &message[1..end_index];
+                    if !issue.is_empty() {
+                        *commits_by_issue.entry(issue.to_string()).or_insert(0) += 1;
+                    }
+                }
+            } else if message.starts_with('#') {
+                let issue_part = &message[1..];
+                let end_index = issue_part
+                    .find(|c: char| !c.is_alphanumeric())
+                    .unwrap_or(issue_part.len());
+                let issue = &issue_part[..end_index];
+                if !issue.is_empty() {
+                    *commits_by_issue.entry(issue.to_string()).or_insert(0) += 1;
+                }
+            }
+
+            let lower_message = message.to_lowercase();
             for (category, keywords) in &keyword_map {
-                if keywords.iter().any(|keyword| message.contains(keyword)) {
+                if keywords
+                    .iter()
+                    .any(|keyword| lower_message.contains(keyword))
+                {
                     *commits_by_type.entry(category.to_string()).or_insert(0) += 1;
                 }
             }
 
-            commit_messages.push(commit.message().unwrap_or("").to_string());
+            commit_messages.push(message.to_string());
         } else if commit_date < today {
             revwalk.hide(oid)?; // skip parent commits if already this is older than today (they can only get older in this history)
         }
@@ -223,7 +248,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
     let mut authors: Vec<_> = commits_by_author.into_iter().collect();
     authors.sort_by(|a, b| b.1.commits.cmp(&a.1.commits).then_with(|| a.0.cmp(&b.0)));
     for (author, contributions) in authors {
-        if full {
+        if full || display.line_diff {
             tab_author.add_row(vec![
                 Cell::new(author),
                 Cell::new(contributions.commits.to_string()).set_alignment(CellAlignment::Center),
@@ -285,7 +310,15 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
         }
     }
 
-    if display.issues {}
+    if display.issues && !commits_by_issue.is_empty() {
+        let mut issues: Vec<_> = commits_by_issue.into_iter().collect();
+        issues.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
+
+        for (issue, count) in issues {
+            add_row_with_centered_value(&mut tab_issue, &issue, &count.to_string());
+        }
+        println!("\n{tab_issue}");
+    }
 
     Ok(())
 }
