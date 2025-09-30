@@ -1,6 +1,6 @@
 [package]
 name = "git-today"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2024"
 authors = ["bitSheriff"]
 description = "A tool to recap your daily git work"
