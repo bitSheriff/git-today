@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.5:
+## v0.1.5: 2025-09-30
 
 - added issue ticket
 
