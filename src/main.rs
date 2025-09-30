@@ -123,7 +123,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
 
     tab_issue
         .set_header(vec![
-            Cell::new("Issue").add_attribute(Attribute::Bold),
+            Cell::new("Issue Ticket").add_attribute(Attribute::Bold),
             Cell::new("# of Commits")
                 .add_attribute(Attribute::Bold)
                 .set_alignment(CellAlignment::Center),
@@ -206,10 +206,8 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
                 }
             } else if message.starts_with('#') {
                 let issue_part = &message[1..];
-                let end_index = issue_part
-                    .find(|c: char| !c.is_alphanumeric())
-                    .unwrap_or(issue_part.len());
-                let issue = &issue_part[..end_index];
+                let terminator_pos = issue_part.find([' ', ':']).unwrap_or(issue_part.len());
+                let issue = &issue_part[..terminator_pos];
                 if !issue.is_empty() {
                     *commits_by_issue.entry(issue.to_string()).or_insert(0) += 1;
                 }
