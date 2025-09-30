@@ -244,9 +244,12 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             );
         }
     }
-    println!("{tab_author}");
 
-    if !commits_by_type.is_empty() || full {
+    if display.authors {
+        println!("{tab_author}");
+    }
+
+    if (!commits_by_type.is_empty() || full) && display.issue_types {
         let issue_types = [
             ("Bugs", "🐛 Bugs"),
             ("Features", "🚀 Features"),
@@ -281,6 +284,8 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
             println!("- {}", msg.trim());
         }
     }
+
+    if display.issues {}
 
     Ok(())
 }
