@@ -204,8 +204,7 @@ fn run(path: &str, full: bool) -> Result<(), git2::Error> {
                         *commits_by_issue.entry(issue.to_string()).or_insert(0) += 1;
                     }
                 }
-            } else if message.starts_with('#') {
-                let issue_part = &message[1..];
+            } else if let Some(issue_part) = message.strip_prefix('#') {
                 let terminator_pos = issue_part.find([' ', ':']).unwrap_or(issue_part.len());
                 let issue = &issue_part[..terminator_pos];
                 if !issue.is_empty() {
