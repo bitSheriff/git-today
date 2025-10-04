@@ -49,12 +49,53 @@ fn main() {
                 .action(clap::ArgAction::SetTrue)
                 .help("Print commit messages and full table"),
         )
+        .arg(
+            Arg::new("author")
+                .long("author")
+                .action(clap::ArgAction::SetTrue)
+                .help("Display authors table"),
+        )
+        .arg(
+            Arg::new("files")
+                .long("files")
+                .action(clap::ArgAction::SetTrue)
+                .help("Display changed files"),
+        )
+        .arg(
+            Arg::new("issues")
+                .long("issues")
+                .action(clap::ArgAction::SetTrue)
+                .help("Display issues table"),
+        )
+        .arg(
+            Arg::new("messages")
+                .long("messages")
+                .action(clap::ArgAction::SetTrue)
+                .help("Display commit messages"),
+        )
+        .arg(
+            Arg::new("types")
+                .long("types")
+                .action(clap::ArgAction::SetTrue)
+                .help("Display issue types table"),
+        )
+        .arg(
+            Arg::new("diff")
+                .long("diff")
+                .action(clap::ArgAction::SetTrue)
+                .help("Display line diffs in authors table"),
+        )
+        .arg(
+            Arg::new("only")
+                .long("only")
+                .action(clap::ArgAction::SetTrue)
+                .help("Display only the selected items"),
+        )
         .get_matches();
 
     let path = args.get_one::<String>("path").unwrap();
-    let full = args.get_flag("full");
 
-    match run(path, full) {
+    match run(path, &args) {
         Ok(_) => {}
         Err(e) => eprintln!("error: {}", e),
     }
@@ -67,16 +108,50 @@ fn add_row_with_centered_value(table: &mut Table, label: &str, value: &str) {
     ]);
 }
 
-fn run(path: &str, full: bool) -> Result<(), git2::Error> {
+fn run(path: &str, args: &clap::ArgMatches) -> Result<(), git2::Error> {
+    let full = args.get_flag("full");
+    let only = args.get_flag("only");
+
     // config what to display with default values
-    let mut display = Display {
-        authors: true,
-        messages: false,
-        issue_types: true,
-        files: false,
-        issues: false,
-        line_diff: false,
+    let mut display = if only {
+        Display {
+            authors: false,
+            messages: false,
+            issue_types: false,
+            files: false,
+            issues: false,
+            line_diff: false,
+        }
+    } else {
+        Display {
+            authors: true,
+            messages: false,
+            issue_types: true,
+            files: false,
+            issues: false,
+            line_diff: false,
+        }
     };
+
+    if args.get_flag("author") {
+        display.authors = true;
+    }
+    if args.get_flag("files") {
+        display.files = true;
+    }
+    if args.get_flag("issues") {
+        display.issues = true;
+    }
+    if args.get_flag("messages") {
+        display.messages = true;
+    }
+    if args.get_flag("types") {
+        display.issue_types = true;
+    }
+    if args.get_flag("diff") {
+        display.line_diff = true;
+    }
+
     let repo = Repository::open(path)?;
     let mut revwalk = repo.revwalk()?;
     revwalk.push_glob("refs/heads/*")?;
