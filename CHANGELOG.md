@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.6: 2025-10-04
+
+- added flags to control output (`--author`, `--files`, `--issues`, `--messages`, `--types`, `--diff`)
+- added `--only` flag to display only selected items
+
 ## v0.1.5: 2025-09-30
 
 - added issue ticket

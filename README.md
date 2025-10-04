@@ -49,8 +49,32 @@ Arguments:
 
 Options:
   -v, --version  Print version information
-      --full     Print commit messages
+      --full     Print commit messages and full table
+      --author   Display authors table
+      --files    Display changed files
+      --issues   Display issues table
+      --messages Display commit messages
+      --types    Display issue types table
+      --diff     Display line diffs in authors table
+      --only     Display only the selected items
   -h, --help     Print help
+```
+
+### Fine-grained control
+
+You can control which sections are displayed using flags. By default, the authors and issue types tables are shown.
+
+- `--author`: Show the authors table.
+- `--files`: Show the list of changed files.
+- `--issues`: Show the issue tickets table.
+- `--messages`: Show the commit messages.
+- `--types`: Show the issue types table.
+- `--diff`: Show line diffs (additions/deletions) in the authors table.
+
+The `--only` flag allows you to display *only* the sections you specify. For example, to see only the commit messages and changed files:
+
+```sh
+git-today --only --messages --files
 ```
 
 And this will print a small table which looks like:
