@@ -108,7 +108,7 @@ fn add_row_with_centered_value(table: &mut Table, label: &str, value: &str) {
     ]);
 }
 
-fn run(path: &str, args: &clap::ArgMatches) -> Result<(), git2::Error> {
+fn get_displaying_data(args: &clap::ArgMatches) -> Display {
     let full = args.get_flag("full");
     let only = args.get_flag("only");
 
@@ -152,6 +152,19 @@ fn run(path: &str, args: &clap::ArgMatches) -> Result<(), git2::Error> {
         display.line_diff = true;
     }
 
+    if full {
+        display.messages = true;
+        display.files = true;
+        display.issues = true;
+    }
+
+    display
+}
+
+fn run(path: &str, args: &clap::ArgMatches) -> Result<(), git2::Error> {
+    let full = args.get_flag("full");
+    let display = get_displaying_data(args);
+
     let repo = Repository::open(path)?;
     let mut revwalk = repo.revwalk()?;
     revwalk.push_glob("refs/heads/*")?;
@@ -176,9 +189,6 @@ fn run(path: &str, args: &clap::ArgMatches) -> Result<(), git2::Error> {
         tab_author_header.push(Cell::new("Adds").add_attribute(Attribute::Bold));
         tab_author_header.push(Cell::new("Dels").add_attribute(Attribute::Bold));
         tab_author_header.push(Cell::new("Files").add_attribute(Attribute::Bold));
-        display.messages = true;
-        display.files = true;
-        display.issues = true;
     }
 
     tab_author
