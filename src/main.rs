@@ -91,6 +91,12 @@ fn main() {
                 .action(clap::ArgAction::SetTrue)
                 .help("Display only the selected items"),
         )
+        .arg(
+            Arg::new("all")
+                .long("all")
+                .action(clap::ArgAction::SetTrue)
+                .help("Parse whole history"),
+        )
         .get_matches();
 
     let path = args.get_one::<String>("path").unwrap();
@@ -232,7 +238,7 @@ fn run(path: &str, args: &clap::ArgMatches) -> Result<(), git2::Error> {
             .unwrap()
             .date_naive();
 
-        if commit_date == today {
+        if commit_date == today || args.get_flag("all") {
             let author = commit.author();
             let author_name = author.name().unwrap_or("Unknown").to_string();
             let contributions = commits_by_author
