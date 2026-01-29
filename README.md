@@ -10,7 +10,7 @@ A tool to recap your daily git work.
 ## Motivation
 
 In my optinion, projects which solve a problem firstly to use, are the most valueable. So the idea for this project was born while I was writing my bachelor thesis:
-working all day in a project which gets bigger and bigger, the commits are piling up (big fan of commiting small chunks when working with LaTeX) and at the end of the day I had no idea how *much* I worked and how. Pretty early in the process I commited to "mark" my commits with little tags inside the message (not like `git tag`) to get a quick overview what this commit is about.
+working all day in a project which gets bigger and bigger, the commits are piling up (big fan of commiting small chunks when working with LaTeX) and at the end of the day I had no idea how _much_ I worked and how. Pretty early in the process I commited to "mark" my commits with little tags inside the message (not like `git tag`) to get a quick overview what this commit is about.
 
 So I said to myself, why not analyze the commit history of today and print nice little statistics.
 
@@ -57,6 +57,7 @@ Options:
       --types    Display issue types table
       --diff     Display line diffs in authors table
       --only     Display only the selected items
+      --all      Process whole history, not just today
   -h, --help     Print help
 ```
 
@@ -71,13 +72,14 @@ You can control which sections are displayed using flags. By default, the author
 - `--types`: Show the issue types table.
 - `--diff`: Show line diffs (additions/deletions) in the authors table.
 
-The `--only` flag allows you to display *only* the sections you specify. For example, to see only the commit messages and changed files:
+The `--only` flag allows you to display _only_ the sections you specify. For example, to see only the commit messages and changed files:
 
 ```sh
 git-today --only --messages --files
 ```
 
 And this will print a small table which looks like:
+
 ```
 ╭────────────┬──────────────╮
 │ Author     ┆ # of Commits │
@@ -148,7 +150,6 @@ Commit messages today:
 ╰──────────────┴──────────────╯
 
 ```
-
 
 To use this tool with `git today`, you can create a git alias.
 
