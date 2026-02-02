@@ -36,14 +36,19 @@ pub fn analyze_commits(
     ];
 
     let today_string = today.to_string();
-    let start_date = NaiveDate::parse_from_str(
+    let mut start_date = NaiveDate::parse_from_str(
         args.get_one::<String>("start").unwrap_or(&today_string),
         "%Y-%m-%d",
     );
-    let end_date = NaiveDate::parse_from_str(
+    let mut end_date = NaiveDate::parse_from_str(
         args.get_one::<String>("end").unwrap_or(&today_string),
         "%Y-%m-%d",
     );
+
+    // if the user mixed up start and end, just switch them
+    if start_date.unwrap() > end_date.unwrap() {
+        std::mem::swap(&mut start_date, &mut end_date);
+    }
 
     while let Some(oid) = revwalk.next() {
         let oid = oid?;
@@ -59,15 +64,14 @@ pub fn analyze_commits(
         {
             let author = commit.author();
             let author_name = author.name().unwrap_or("Unknown").to_string();
-            let contributions =
-                commits_by_author
-                    .entry(author_name)
-                    .or_insert(Contributions {
-                        commits: 0,
-                        lines_added: 0,
-                        lines_removed: 0,
-                        files_changed: HashSet::new(),
-                    });
+            let contributions = commits_by_author
+                .entry(author_name)
+                .or_insert(Contributions {
+                    commits: 0,
+                    lines_added: 0,
+                    lines_removed: 0,
+                    files_changed: HashSet::new(),
+                });
             contributions.commits += 1;
 
             let tree = commit.tree()?;
