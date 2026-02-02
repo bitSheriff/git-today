@@ -9,6 +9,14 @@ readme = "README.md"
 repository = "https://github.com/bitSheriff/git-today"
 license = "MIT"
 
+[lib]
+name = "git_today"
+path = "src/lib.rs"
+
+[[bin]]
+name = "git-today"
+path = "src/main.rs"
+
 [dependencies]
 chrono = "0.4.42"
 clap = { version = "4.5.4", features = ["derive"] }
