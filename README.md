@@ -58,8 +58,8 @@ Options:
       --diff     Display line diffs in authors table
       --only     Display only the selected items
       --all      Process whole history, not just today
-      --start    Start date to parse commits (YY-MM-DD format)
-      --end      End date to parse commits (YY-MM-DD format), if not given assumes as today
+      --start    Start date to parse commits (YY-MM-DD format, inclusive)
+      --end      End date to parse commits (YY-MM-DD format, inclusive), if not given assumes as today
   -h, --help     Print help
 ```
 
