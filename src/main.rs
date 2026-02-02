@@ -1,4 +1,4 @@
-use chrono::{DateTime, Local};
+use chrono::{DateTime, Local, NaiveDate};
 use clap::{Arg, Command};
 use comfy_table::modifiers::UTF8_ROUND_CORNERS;
 use comfy_table::presets::UTF8_FULL;
@@ -97,6 +97,8 @@ fn main() {
                 .action(clap::ArgAction::SetTrue)
                 .help("Parse whole history"),
         )
+        .arg(Arg::new("start").long("start").help("Start date"))
+        .arg(Arg::new("end").long("end").help("End date"))
         .get_matches();
 
     let path = args.get_one::<String>("path").unwrap();
@@ -230,6 +232,16 @@ fn run(path: &str, args: &clap::ArgMatches) -> Result<(), git2::Error> {
         ("Refactors", vec!["refactors", "rewrite"]),
     ];
 
+    let today_string = today.to_string();
+    let start_date = NaiveDate::parse_from_str(
+        args.get_one::<String>("start").unwrap_or(&today_string),
+        "%Y-%m-%d",
+    );
+    let end_date = NaiveDate::parse_from_str(
+        args.get_one::<String>("end").unwrap_or(&today_string),
+        "%Y-%m-%d",
+    );
+
     while let Some(oid) = revwalk.next() {
         let oid = oid?;
         let commit = repo.find_commit(oid)?;
@@ -238,7 +250,10 @@ fn run(path: &str, args: &clap::ArgMatches) -> Result<(), git2::Error> {
             .unwrap()
             .date_naive();
 
-        if commit_date == today || args.get_flag("all") {
+        if commit_date == today
+            || args.get_flag("all")
+            || ((commit_date <= end_date.unwrap()) && (commit_date >= start_date.unwrap()))
+        {
             let author = commit.author();
             let author_name = author.name().unwrap_or("Unknown").to_string();
             let contributions = commits_by_author
@@ -314,8 +329,6 @@ fn run(path: &str, args: &clap::ArgMatches) -> Result<(), git2::Error> {
             }
 
             commit_messages.push(message.to_string());
-        } else if commit_date < today {
-            revwalk.hide(oid)?; // skip parent commits if already this is older than today (they can only get older in this history)
         }
     }
 
