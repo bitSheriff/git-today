@@ -10,11 +10,12 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
+        cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
       in
       {
         packages.default = pkgs.rustPlatform.buildRustPackage {
-          pname = "git-today";
-          version = "0.1.7";
+          pname = cargoToml.package.name;
+          version = cargoToml.package.version;
 
           src = ./.;
 
