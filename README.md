@@ -37,6 +37,18 @@ or with the AUR
 yay -S git-today
 ```
 
+### Nix
+
+You can run `git-today` directly or install it using Nix flakes:
+
+```sh
+# Run without installing
+nix run github:bitSheriff/git-today -- --help
+
+# Install to profile
+nix profile install github:bitSheriff/git-today
+```
+
 ## Usage
 
 ```
