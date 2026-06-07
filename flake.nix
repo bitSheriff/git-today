@@ -6,8 +6,14 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = import nixpkgs { inherit system; };
         cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
@@ -28,7 +34,8 @@
             pkgs.openssl
             pkgs.zlib
             pkgs.libgit2
-          ] ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
+          ]
+          ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
             pkgs.darwin.apple_sdk.frameworks.Security
             pkgs.darwin.apple_sdk.frameworks.CoreFoundation
           ];
@@ -42,6 +49,11 @@
             license = licenses.mit;
             mainProgram = "git-today";
           };
+        };
+
+        apps.default = {
+          type = "app";
+          program = "${self.packages.${system}.default}/bin/git-today";
         };
 
         devShells.default = pkgs.mkShell {
