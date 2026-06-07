@@ -17,6 +17,22 @@
       let
         pkgs = import nixpkgs { inherit system; };
         cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
+        formatter = pkgs.writeShellApplication {
+          name = "formatter";
+          runtimeInputs = [
+            pkgs.nixfmt
+            pkgs.rustfmt
+          ];
+          text = ''
+            for file in "$@"; do
+              if [[ "$file" == *.nix ]]; then
+                nixfmt "$file"
+              elif [[ "$file" == *.rs ]]; then
+                rustfmt "$file"
+              fi
+            done
+          '';
+        };
       in
       {
         packages.default = pkgs.rustPlatform.buildRustPackage {
@@ -55,6 +71,8 @@
           type = "app";
           program = "${self.packages.${system}.default}/bin/git-today";
         };
+
+        formatter = formatter;
 
         devShells.default = pkgs.mkShell {
           inputsFrom = [ self.packages.${system}.default ];
